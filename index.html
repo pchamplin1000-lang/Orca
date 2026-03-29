@@ -1,7 +1,168 @@
-| I hate Boston       | Stupid bikers        | I’m going around       | What is this for?     | I hate the city        | Went over the curb again |
-|---------------------|----------------------|-------------------------|------------------------|-------------------------|---------------------------|
-| Hogging the road    | I’m not stopping     | This GPS is useless     | I’ll never come down   | That guy’s clueless     | I’m done                  |
-| I’m not paying      | I hate this light    |        FREE SPACE       | This lane is useless   | What are you doing?     | Another detour?          |
-| I should’ve stayed  | Honking three times  | This is ridiculous      | Bike lanes are a mess  | I’m not waiting here    | I need a snack            |
-| I hate this turn    | I’m running the red  | This city is a maze     | That’s not how you     | I’m not doing this      | Slow bus again            |
-| Why is it like this?| I should’ve rerouted | Silly car               | I’m going to lose it   | This is a joke          | Where’s the turn?         |
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Brain Games</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #121212;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        margin-top: 20px;
+    }
+
+    .menu {
+        margin: 20px;
+    }
+
+    button {
+        padding: 10px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .game {
+        display: none;
+        margin-top: 30px;
+    }
+
+    /* Stroop Game */
+    #word {
+        font-size: 50px;
+        margin: 20px;
+    }
+
+    .color-btn {
+        width: 100px;
+        height: 50px;
+        margin: 10px;
+        font-weight: bold;
+    }
+
+    /* Reaction Game */
+    #reactionBox {
+        width: 300px;
+        height: 200px;
+        margin: 30px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h1>🧠 Brain Games</h1>
+
+<div class="menu">
+    <button onclick="showGame('stroop')">Color Brain Trick</button>
+    <button onclick="showGame('reaction')">Reaction Tester</button>
+</div>
+
+<!-- Stroop Game -->
+<div id="stroop" class="game">
+    <h2>Color Word Brain Trick</h2>
+    <p>Click the COLOR of the word, not the word itself!</p>
+    <div id="word">RED</div>
+    <div>
+        <button class="color-btn" style="background:red;" onclick="checkAnswer('red')">Red</button>
+        <button class="color-btn" style="background:blue;" onclick="checkAnswer('blue')">Blue</button>
+        <button class="color-btn" style="background:green;" onclick="checkAnswer('green')">Green</button>
+        <button class="color-btn" style="background:yellow;" onclick="checkAnswer('yellow')">Yellow</button>
+    </div>
+    <p id="score">Score: 0</p>
+</div>
+
+<!-- Reaction Game -->
+<div id="reaction" class="game">
+    <h2>Reaction Time Tester</h2>
+    <div id="reactionBox">Click to Start</div>
+    <p id="reactionResult"></p>
+</div>
+
+<script>
+let currentGame = "";
+function showGame(game) {
+    document.querySelectorAll('.game').forEach(g => g.style.display = 'none');
+    document.getElementById(game).style.display = 'block';
+    currentGame = game;
+}
+
+/* -------- Stroop Game -------- */
+const words = ["RED", "BLUE", "GREEN", "YELLOW"];
+const colors = ["red", "blue", "green", "yellow"];
+let correctColor = "";
+let score = 0;
+
+function newWord() {
+    let word = words[Math.floor(Math.random() * words.length)];
+    let color = colors[Math.floor(Math.random() * colors.length)];
+    correctColor = color;
+    const wordDiv = document.getElementById("word");
+    wordDiv.innerText = word;
+    wordDiv.style.color = color;
+}
+
+function checkAnswer(color) {
+    if (color === correctColor) {
+        score++;
+    } else {
+        score--;
+    }
+    document.getElementById("score").innerText = "Score: " + score;
+    newWord();
+}
+
+newWord();
+
+/* -------- Reaction Game -------- */
+let startTime = 0;
+let waiting = false;
+let timeout;
+
+const box = document.getElementById("reactionBox");
+
+box.addEventListener("click", function() {
+    if (!waiting) {
+        box.style.background = "red";
+        box.innerText = "Wait...";
+        waiting = true;
+
+        timeout = setTimeout(() => {
+            box.style.background = "green";
+            box.innerText = "CLICK!";
+            startTime = new Date().getTime();
+        }, Math.random() * 3000 + 2000);
+
+    } else {
+        if (box.style.background === "green") {
+            let reactionTime = new Date().getTime() - startTime;
+            document.getElementById("reactionResult").innerText =
+                "Reaction Time: " + reactionTime + " ms";
+            box.style.background = "#333";
+            box.innerText = "Click to Start";
+            waiting = false;
+        } else {
+            clearTimeout(timeout);
+            box.innerText = "Too soon! Try again.";
+            box.style.background = "#333";
+            waiting = false;
+        }
+    }
+});
+</script>
+
+</body>
+</html
